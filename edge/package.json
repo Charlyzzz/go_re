@@ -1,0 +1,6 @@
+{
+  "name": "edge",
+  "version": "1.0.0",
+  "main": "lambda.js",
+  "license": "ISC"
+}

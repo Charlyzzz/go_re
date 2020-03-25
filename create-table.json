@@ -1,0 +1,27 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "SubDomain",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Path",
+      "AttributeType": "S"
+    }
+  ],
+  "TableName": "dev-Records",
+  "KeySchema": [
+    {
+      "AttributeName": "SubDomain",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Path",
+      "KeyType": "RANGE"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}

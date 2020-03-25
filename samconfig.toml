@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "go-re"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-16dqyd9r6sxya"
+s3_prefix = "go_re"
+region = "us-east-1"
+profile = "10pines"
+capabilities = "CAPABILITY_IAM"

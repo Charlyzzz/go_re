@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  go_re
+
+  Sample SAM Template for go_re
+
+Globals:
+  Function:
+    Timeout: 5
+
+Parameters:
+  StageName:
+    Type: String
+    Description: API stage name
+
+Resources:
+  RedirectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          RECORDS_TABLE_NAME: !Ref RecordsTable
+          DYNAMO_ENDPOINT: http://dynamodb.us-east-1.amazonaws.com
+          REGION_NAME: us-east-1
+      CodeUri: redirect
+      Handler: redirect
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /{path+}
+            Method: GET
+            RestApiId: !Ref RedirectApi
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
+
+  RedirectApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      OpenApiVersion: '2.0'
+
+  EdgeInterceptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+      CodeUri: edge/
+      Handler: edge.handler
+      Runtime: nodejs12.x
+      AutoPublishAlias: !Ref StageName
+      AssumeRolePolicyDocument:
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "lambda.amazonaws.com",
+                "edgelambda.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }
+          ]
+        }
+
+  RecordsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:  !Sub "${StageName}-Records"
+      AttributeDefinitions:
+        - AttributeName: SubDomain
+          AttributeType: S
+        - AttributeName: Path
+          AttributeType: S
+      KeySchema:
+        - AttributeName: SubDomain
+          KeyType: HASH
+        - AttributeName: Path
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+Outputs:
+  RedirectAPI:
+    Description: "API Gateway redirect endpoint URL"
+    Value: !Sub "https://${RedirectApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/hello/"
+  RedirectFunction:
+    Description: "Redirect Function ARN"
+    Value: !GetAtt RedirectFunction.Arn
+  RedirectFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt RedirectFunctionRole.Arn
