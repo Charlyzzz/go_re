@@ -9,7 +9,7 @@ const (
 	Redirect        = 307
 	NotFound        = 404
 	LocationHeader  = "Location"
-	SubDomainHeader = "SubDomainHeader"
+	SubDomainHeader = "SubDomain"
 )
 
 var Finder RecordFinder

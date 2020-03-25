@@ -45,7 +45,7 @@ func (rf *finder) Call(searchRecord SearchRecord) (Record, bool, error) {
 			"Path": {
 				S: aws.String(searchRecord.Path),
 			},
-			"SubDomainHeader": {
+			"SubDomain": {
 				S: aws.String(searchRecord.SubDomain),
 			},
 		},
