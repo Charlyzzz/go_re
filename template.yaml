@@ -49,7 +49,7 @@ Resources:
     Properties:
       Environment:
       CodeUri: edge/
-      Handler: edge.handler
+      Handler: lambda.handler
       Runtime: nodejs12.x
       AutoPublishAlias: !Ref StageName
       AssumeRolePolicyDocument:
