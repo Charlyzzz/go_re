@@ -1,6 +1,7 @@
 .PHONY: deps
 .PHONY: clean
 .PHONY: build
+.PHONY: test
 .PHONY: deploy
 
 deps:
@@ -12,6 +13,8 @@ clean:
 build:
 	GOOS=linux GOARCH=amd64 go build -o redirect/redirect ./redirect
 
-deploy:
-	sam build
+test:
+	go test ./...
+
+deploy: build
 	sam deploy
