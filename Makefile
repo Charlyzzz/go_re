@@ -16,5 +16,6 @@ build:
 test:
 	go test ./...
 
-deploy: build
+deploy:
+	sam build
 	sam deploy

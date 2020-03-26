@@ -92,7 +92,7 @@ Resources:
 Outputs:
   RedirectAPI:
     Description: "API Gateway redirect endpoint URL"
-    Value: !Sub "https://${RedirectApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/hello/"
+    Value: !Sub "https://${RedirectApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
   RedirectFunction:
     Description: "Redirect Function ARN"
     Value: !GetAtt RedirectFunction.Arn
