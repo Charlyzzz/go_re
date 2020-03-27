@@ -1,9 +1,11 @@
 package main
 
 import (
-	"testing"
-
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/stretchr/testify/assert"
+	. "go_re/common"
+	"net/http"
+	"testing"
 )
 
 type fakeFinder struct {
@@ -47,38 +49,28 @@ func TestHandler(t *testing.T) {
 				RedirectUri: google,
 			})
 
-		resp, err := handler(events.APIGatewayProxyRequest{})
-		if err != nil {
-			t.Fatalf("Handler errored %v", err)
-		}
-		if statusCode := resp.StatusCode; statusCode != Redirect {
-			t.Fatalf("Status Code should be %d but was %d", Redirect, statusCode)
-		}
-		if redirectionUri := resp.Headers[LocationHeader]; redirectionUri != google {
-			t.Fatalf("Redirect URI should be %s but was %s", google, redirectionUri)
-		}
+		resp := RunHandler(t, handler, events.APIGatewayProxyRequest{})
+
+		assertions := assert.New(t)
+		assertions.Equal(http.StatusTemporaryRedirect, resp.StatusCode)
+		assertions.Equal(google, resp.Headers[LocationHeader])
 	})
 
 	t.Run("Not found", func(t *testing.T) {
 		Finder = notFound()
 
-		resp, err := handler(events.APIGatewayProxyRequest{})
-		if err != nil {
-			t.Fatalf("Handler errored %v", err)
-		}
-		if statusCode := resp.StatusCode; statusCode != NotFound {
-			t.Fatalf("Status Code should be <%d> but was <%d>", NotFound, statusCode)
-		}
-		expectedBody := "not found"
-		if body := resp.Body; body != expectedBody {
-			t.Fatalf("Body should be <%s> but was <%s>", expectedBody, body)
-		}
+		resp := RunHandler(t, handler, events.APIGatewayProxyRequest{})
+
+		assertions := assert.New(t)
+		assertions.Equal(http.StatusNotFound, resp.StatusCode)
+		assertions.Equal("not found", resp.Body)
 	})
 }
 
 func TestSearch(t *testing.T) {
 
 	t.Run("New from request", func(t *testing.T) {
+
 		expectedPath := "youtube"
 		expectedSubDomain := "google"
 		sr := NewSearchRecord(events.APIGatewayProxyRequest{
@@ -87,11 +79,9 @@ func TestSearch(t *testing.T) {
 				Path:      "youtube",
 			},
 		})
-		if path := sr.Path; path != expectedPath {
-			t.Fatalf("Path should be <%s> but was <%s>", expectedPath, path)
-		}
-		if subDomain := sr.SubDomain; subDomain != expectedSubDomain {
-			t.Fatalf("SubDomain should be <%s> but was <%s>", expectedSubDomain, subDomain)
-		}
+
+		assertions := assert.New(t)
+		assertions.Equal(expectedPath, sr.Path)
+		assertions.Equal(expectedSubDomain, sr.SubDomain)
 	})
 }

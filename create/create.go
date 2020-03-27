@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	. "go_re/common"
 	"net/http"
 )
 
@@ -12,15 +13,6 @@ type CreateRecord struct {
 	Path        string `json:"path"`
 	RedirectUri string `json:"redirectUri"`
 }
-
-type HttpError struct {
-	Error string `json: "error"`
-}
-
-var (
-	IncorrectBodyHttpError = HttpError{Error: "Body params missing or empty"}
-	MissingBodyHttpError   = HttpError{Error: "Body is missing"}
-)
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	if request.Body == "" {

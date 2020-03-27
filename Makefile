@@ -16,7 +16,7 @@ build:
 	GOOS=linux GOARCH=amd64 go build -o create/create ./create
 
 test:
-	go test ./...
+	go test ./create ./redirect
 
 deploy:
 	sam build
