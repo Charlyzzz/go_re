@@ -62,7 +62,7 @@ Resources:
           Type: Api
           Properties:
             Path: /record
-            Method: POST
+            Method: PUT
             RestApiId: !Ref RedirectApi
       Policies:
         - DynamoDBReadPolicy:

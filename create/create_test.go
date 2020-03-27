@@ -9,7 +9,16 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+type fakeSaver struct {
+	RecordSaver
+}
+
+func (fs *fakeSaver) Call(createRecord CreateRecord) error {
+	return nil
+}
+
 func TestHandler(t *testing.T) {
+	Saver = &fakeSaver{}
 
 	t.Run("Without body", func(t *testing.T) {
 		resp := RunHandler(t, handler, events.APIGatewayProxyRequest{})

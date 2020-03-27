@@ -3,11 +3,10 @@ package main
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"net/http"
 )
 
 const (
-	Redirect       = 307
-	NotFound       = 404
 	LocationHeader = "Location"
 	SubDomain      = "subDomain"
 	Path           = "path"
@@ -19,6 +18,7 @@ type SearchRecord struct {
 	SubDomain string
 	Path      string
 }
+
 
 func NewSearchRecord(request events.APIGatewayProxyRequest) SearchRecord {
 	subDomain := request.PathParameters[SubDomain]
@@ -42,7 +42,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 	return events.APIGatewayProxyResponse{
-		StatusCode: Redirect,
+		StatusCode: http.StatusTemporaryRedirect,
 		Headers:    map[string]string{LocationHeader: record.RedirectUri},
 	}, nil
 }
