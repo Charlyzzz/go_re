@@ -4,6 +4,6 @@ require (
 	github.com/jmespath/go-jmespath v0.3.0 // indirect
 )
 
-module redirect
+module go_re
 
 go 1.14
