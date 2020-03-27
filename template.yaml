@@ -15,6 +15,13 @@ Parameters:
     Description: API stage name
 
 Resources:
+  RedirectApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      OpenApiVersion: '2.0'
+
+
   RedirectFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -26,23 +33,40 @@ Resources:
       CodeUri: redirect
       Handler: redirect
       Runtime: go1.x
-      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Tracing: Active
       Events:
-        CatchAll:
+        Query:
           Type: Api
           Properties:
-            Path: /{path+}
+            Path: /query/{subDomain}/{path}
             Method: GET
             RestApiId: !Ref RedirectApi
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref RecordsTable
 
-  RedirectApi:
-    Type: AWS::Serverless::Api
+  CreateRecordFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      StageName: !Ref StageName
-      OpenApiVersion: '2.0'
+      Environment:
+        Variables:
+          RECORDS_TABLE_NAME: !Ref RecordsTable
+          DYNAMO_ENDPOINT: http://dynamodb.us-east-1.amazonaws.com
+          REGION_NAME: us-east-1
+      CodeUri: create
+      Handler: create
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        Query:
+          Type: Api
+          Properties:
+            Path: /record
+            Method: POST
+            RestApiId: !Ref RedirectApi
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
 
   EdgeInterceptFunction:
     Type: AWS::Serverless::Function

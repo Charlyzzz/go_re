@@ -9,9 +9,11 @@ deps:
 
 clean:
 	rm -rf ./redirect/redirect
+	rm -rf ./create/create
 
 build:
 	GOOS=linux GOARCH=amd64 go build -o redirect/redirect ./redirect
+	GOOS=linux GOARCH=amd64 go build -o create/create ./create
 
 test:
 	go test ./...
