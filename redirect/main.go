@@ -6,10 +6,11 @@ import (
 )
 
 const (
-	Redirect        = 307
-	NotFound        = 404
-	LocationHeader  = "Location"
-	SubDomainHeader = "SubDomain"
+	Redirect       = 307
+	NotFound       = 404
+	LocationHeader = "Location"
+	SubDomain      = "subDomain"
+	Path           = "path"
 )
 
 var Finder RecordFinder
@@ -20,8 +21,8 @@ type SearchRecord struct {
 }
 
 func NewSearchRecord(request events.APIGatewayProxyRequest) SearchRecord {
-	subDomain := request.Headers[SubDomainHeader]
-	path := request.Path
+	subDomain := request.PathParameters[SubDomain]
+	path := request.PathParameters[Path]
 	return SearchRecord{
 		SubDomain: subDomain,
 		Path:      path,

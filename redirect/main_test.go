@@ -47,7 +47,7 @@ func TestHandler(t *testing.T) {
 				RedirectUri: google,
 			})
 
-		resp, err := handler(events.APIGatewayProxyRequest{Path: "/search"})
+		resp, err := handler(events.APIGatewayProxyRequest{})
 		if err != nil {
 			t.Fatalf("Handler errored %v", err)
 		}
@@ -67,11 +67,11 @@ func TestHandler(t *testing.T) {
 			t.Fatalf("Handler errored %v", err)
 		}
 		if statusCode := resp.StatusCode; statusCode != NotFound {
-			t.Fatalf("Status Code should be %d but was %d", NotFound, statusCode)
+			t.Fatalf("Status Code should be <%d> but was <%d>", NotFound, statusCode)
 		}
 		expectedBody := "not found"
 		if body := resp.Body; body != expectedBody {
-			t.Fatalf("Body should be %s but was %s", expectedBody, body)
+			t.Fatalf("Body should be <%s> but was <%s>", expectedBody, body)
 		}
 	})
 }
@@ -79,19 +79,19 @@ func TestHandler(t *testing.T) {
 func TestSearch(t *testing.T) {
 
 	t.Run("New from request", func(t *testing.T) {
-		expectedPath := "/youtube"
+		expectedPath := "youtube"
 		expectedSubDomain := "google"
 		sr := NewSearchRecord(events.APIGatewayProxyRequest{
-			Path: expectedPath,
-			Headers: map[string]string{
-				SubDomainHeader: expectedSubDomain,
+			PathParameters: map[string]string{
+				SubDomain: "google",
+				Path:      "youtube",
 			},
 		})
 		if path := sr.Path; path != expectedPath {
-			t.Fatalf("Path should be %s but was %s", expectedPath, path)
+			t.Fatalf("Path should be <%s> but was <%s>", expectedPath, path)
 		}
 		if subDomain := sr.SubDomain; subDomain != expectedSubDomain {
-			t.Fatalf("SubDomain should be %s but was %s", expectedSubDomain, subDomain)
+			t.Fatalf("SubDomain should be <%s> but was <%s>", expectedSubDomain, subDomain)
 		}
 	})
 }
