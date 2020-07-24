@@ -61,11 +61,13 @@ Resources:
         Query:
           Type: Api
           Properties:
-            Path: /record
+            Path: /_api/record
             Method: PUT
             RestApiId: !Ref RedirectApi
       Policies:
         - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
+        - DynamoDBWritePolicy:
             TableName: !Ref RecordsTable
 
   EdgeInterceptFunction:

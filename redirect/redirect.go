@@ -23,6 +23,12 @@ type SearchRecord struct {
 func NewSearchRecord(request events.APIGatewayProxyRequest) SearchRecord {
 	subDomain := request.PathParameters[SubDomain]
 	path := request.PathParameters[Path]
+	if path == "" {
+		path = "NONE"
+	}
+	if subDomain == "" {
+		path = "NONE"
+	}
 	return SearchRecord{
 		SubDomain: subDomain,
 		Path:      path,

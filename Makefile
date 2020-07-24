@@ -20,4 +20,4 @@ test:
 
 deploy:
 	sam build
-	sam deploy
+	sam deploy --profile 10pines

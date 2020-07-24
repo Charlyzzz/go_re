@@ -23,6 +23,18 @@ type CreateRecord struct {
 	RedirectUri string `json:"redirectUri" dynamodbav:"RedirectUri"`
 }
 
+func (cr *CreateRecord) IsEmpty() bool {
+	return cr.Path == "NONE" && cr.SubDomain == "NONE"
+}
+
+func NewCreateRecord() *CreateRecord {
+	return &CreateRecord{
+		SubDomain:   "NONE",
+		Path:        "NONE",
+		RedirectUri: "",
+	}
+}
+
 var Saver RecordSaver
 
 type saver struct {
@@ -67,6 +79,11 @@ func (rc *saver) Call(createRecord CreateRecord) error {
 }
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	if !isAuthorized(request) {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusUnauthorized,
+		}, nil
+	}
 	if request.Body == "" {
 		errorResponse, err := json.Marshal(MissingBodyHttpError)
 		if err != nil {
@@ -77,9 +94,9 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 			Body:       string(errorResponse),
 		}, nil
 	}
-	createRecord := &CreateRecord{}
+	createRecord := NewCreateRecord()
 	err := json.Unmarshal([]byte(request.Body), createRecord)
-	if createRecord.Path == "" || createRecord.SubDomain == "" || createRecord.RedirectUri == "" {
+	if createRecord.RedirectUri == "" || createRecord.IsEmpty() {
 		errorResponse, err := json.Marshal(&IncorrectBodyHttpError)
 		if err != nil {
 			return events.APIGatewayProxyResponse{}, err
@@ -99,6 +116,11 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusCreated,
 	}, nil
+}
+
+func isAuthorized(request events.APIGatewayProxyRequest) bool {
+	_, isPresent := request.Headers["x-trust-me-dude"]
+	return isPresent
 }
 
 func main() {
